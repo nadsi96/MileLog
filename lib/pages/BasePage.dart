@@ -4,12 +4,63 @@ import 'package:get/get.dart';
 // 화면 기본 페이지 뷰
 // 백/포 그라운드 전환 등 공통 처리 작성
 abstract class BasePage<T extends GetxController> extends StatefulWidget {
-  const BasePage({Key? key}) : super(key: key);
+
+  // =============================================
+  // 상단바 공통 처리
+  bool bHideTopBar; // 상단바 숨김 여부
+  bool bAllowBackNavigate; // 안드로이드 뒤로가기 동작 허용 여부
+  // false인 경우, 상단 뒤로가기 버튼도 숨김
+
+  Function()? onAppBarLeadingPressed; // 상단바 좌상단 버튼 클릭 동작
+  Widget? leadingBtnIcon; // 상단바 좌상단 버튼 위젯
+
+  String sTitle; // 화면 타이틀
+
+
+  // =============================================
+
+  bool bHideBottomNavi; // 하단 네비바 숨김 여부
+
+  BasePage({
+    Key? key,
+    this.sTitle = "",
+    this.bHideTopBar = false,
+    this.bAllowBackNavigate = true,
+    this.onAppBarLeadingPressed,
+    this.leadingBtnIcon,
+    this.bHideBottomNavi = false,
+
+  }) : super(key: key) {}
 
   T get controller;
 
   // Widget buildBody(BuildContext context);
   Widget build(BuildContext context);
+
+  /// 앱 상단바 좌측 버튼
+  /// 디폴트 뒤로가기 버튼
+  ///
+  /// bAllowBackNavigate가 true이면 노출
+  /// false면 노출하지 않음
+  Widget? topAppBarLeading(){
+    return this.bAllowBackNavigate ? IconButton(
+      onPressed: this.onAppBarLeadingPressed ?? (){
+        // 기본 뒤로가기 동작
+        Get.back();
+      },
+      icon: this.leadingBtnIcon ?? Icon(Icons.arrow_back_ios_new)
+    ) : null;
+  }
+
+  /// 앱 상단바
+  PreferredSizeWidget topAppBar() {
+    return AppBar(
+      backgroundColor: Colors.blue,
+      leading: topAppBarLeading(),
+      title: sTitle.isNotEmpty ? Text(this.sTitle) : null,
+      centerTitle: true,
+    );
+  }
 
   @override
   State<BasePage<T>> createState() => _BasePageState<T>();
@@ -41,6 +92,12 @@ class _BasePageState<T extends GetxController> extends State<BasePage<T>>
 
   @override
   Widget build(BuildContext context) {
+    return PopScope(
+      child: Scaffold(
+        appBar: widget.bHideTopBar ? null : widget.topAppBar(),
+        body: widget.build(context),
+      ),
+    );
     return widget.build(context);
   }
 }
