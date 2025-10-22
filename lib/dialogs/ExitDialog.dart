@@ -20,14 +20,14 @@ class ExitDialog extends StatelessWidget {
               children: [
                 ElevatedButton(
                   onPressed: () {
-                    Get.back(result: false); // 다이얼로그만 닫기
+                    Get.back(); // 다이얼로그만 닫기
                   },
                   child: Text("취소"),
                 ),
                 ElevatedButton(
                   onPressed: () {
-                    Get.back(result: true);
-                    // SystemNavigator.pop();
+                    // 앱 종료
+                    SystemNavigator.pop();
                   },
                   child: Text("종료"),
                 ),

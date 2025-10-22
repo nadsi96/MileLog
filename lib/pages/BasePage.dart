@@ -113,13 +113,10 @@ class _BasePageState<T extends GetxController> extends State<BasePage<T>>
           // 현재 화면이 홈 화면인지 확인
           if (current == Routes.home) {
             // 홈화면이면 종료 확인 다이얼로그 노출
-            var bShouldExit = await Get.dialog(
+            Get.dialog(
               ExitDialog(),
               barrierDismissible: true, // 딤 영역 클릭 시 다이얼로그 닫기 여부
             );
-            if (bShouldExit != null && bShouldExit) {
-              SystemNavigator.pop();
-            }
           } else {
             // 홈이 아니라면 홈으로 이동
             Get.offAllNamed(Routes.home);
