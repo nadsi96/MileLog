@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import 'package:mile_log/dialogs/ExitDialog.dart';
+import 'package:mile_log/routes/Routes.dart';
 
 // 화면 기본 페이지 뷰
 // 백/포 그라운드 전환 등 공통 처리 작성
 abstract class BasePage<T extends GetxController> extends StatefulWidget {
-
   // =============================================
   // 상단바 공통 처리
   bool bHideTopBar; // 상단바 숨김 여부
@@ -15,7 +17,6 @@ abstract class BasePage<T extends GetxController> extends StatefulWidget {
   Widget? leadingBtnIcon; // 상단바 좌상단 버튼 위젯
 
   String sTitle; // 화면 타이틀
-
 
   // =============================================
 
@@ -29,7 +30,6 @@ abstract class BasePage<T extends GetxController> extends StatefulWidget {
     this.onAppBarLeadingPressed,
     this.leadingBtnIcon,
     this.bHideBottomNavi = false,
-
   }) : super(key: key) {}
 
   T get controller;
@@ -42,14 +42,18 @@ abstract class BasePage<T extends GetxController> extends StatefulWidget {
   ///
   /// bAllowBackNavigate가 true이면 노출
   /// false면 노출하지 않음
-  Widget? topAppBarLeading(){
-    return this.bAllowBackNavigate ? IconButton(
-      onPressed: this.onAppBarLeadingPressed ?? (){
-        // 기본 뒤로가기 동작
-        Get.back();
-      },
-      icon: this.leadingBtnIcon ?? Icon(Icons.arrow_back_ios_new)
-    ) : null;
+  Widget? topAppBarLeading() {
+    return this.bAllowBackNavigate
+        ? IconButton(
+            onPressed:
+                this.onAppBarLeadingPressed ??
+                () {
+                  // 기본 뒤로가기 동작
+                  Get.back();
+                },
+            icon: this.leadingBtnIcon ?? Icon(Icons.arrow_back_ios_new),
+          )
+        : null;
   }
 
   /// 앱 상단바
@@ -93,6 +97,35 @@ class _BasePageState<T extends GetxController> extends State<BasePage<T>>
   @override
   Widget build(BuildContext context) {
     return PopScope(
+      canPop: false, // widget.bAllowBackNavigate,
+      onPopInvokedWithResult: (didPop, result) async {
+        final current = Get.currentRoute;
+        // final previous = Get.previousRoute; // 화면 스택이 아닌 이전 화면의 route를 문자열로 저장할 뿐
+        // 이 값으로 스택이 더 없다는것을 확인할 수 없음
+
+        if (Get.key.currentState?.canPop() ?? false) {
+          if (widget.bAllowBackNavigate) {
+            // 스택에 이전 화면이 있다면 그냥 뒤로가기
+            Get.back();
+          }
+        } else {
+          // 이전 화면이 없음
+          // 현재 화면이 홈 화면인지 확인
+          if (current == Routes.home) {
+            // 홈화면이면 종료 확인 다이얼로그 노출
+            var bShouldExit = await Get.dialog(
+              ExitDialog(),
+              barrierDismissible: true, // 딤 영역 클릭 시 다이얼로그 닫기 여부
+            );
+            if (bShouldExit != null && bShouldExit) {
+              SystemNavigator.pop();
+            }
+          } else {
+            // 홈이 아니라면 홈으로 이동
+            Get.offAllNamed(Routes.home);
+          }
+        }
+      },
       child: Scaffold(
         appBar: widget.bHideTopBar ? null : widget.topAppBar(),
         body: widget.build(context),

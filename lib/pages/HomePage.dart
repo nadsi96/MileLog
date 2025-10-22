@@ -10,7 +10,7 @@ class HomePage extends BasePage<HomePageController> {
     super.bHideBottomNavi,
     super.bHideTopBar = true,
     super.sTitle,
-    super.bAllowBackNavigate = false
+    super.bAllowBackNavigate = false,
   })
       : super(
 
