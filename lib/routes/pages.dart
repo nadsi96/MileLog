@@ -12,10 +12,12 @@ final List<GetPage> appPages = [
     name: Routes.home,
     page: () => HomePage(),
     binding: HomeBinding(),
+    transition: Transition.noTransition
   ),
   GetPage(
     name: Routes.subPage,
     page: () => SubPage(),
-    binding: SubPageBinding()
+    binding: SubPageBinding(),
+      transition: Transition.noTransition
   )
 ];

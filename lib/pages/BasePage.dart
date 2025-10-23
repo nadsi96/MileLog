@@ -66,6 +66,59 @@ abstract class BasePage<T extends GetxController> extends StatefulWidget {
     );
   }
 
+  /// 하단 네비바 버튼 생성
+  /// 현재 Route가 targetRoute와 동일하면 색상 변경
+  /// 탭 시 targetRoute로 이동
+  /// home인 경우, 이전 스택 삭제 후 이동
+  Widget bottomNaviButton(String targetRoute) {
+    var iconSet = {
+      Routes.home: Icons.home_filled,
+      Routes.subPage: Icons.insert_drive_file_rounded,
+    };
+    return InkWell(
+      onTap: () {
+        if (Get.currentRoute != targetRoute) {
+          if (targetRoute == Routes.home) {
+            Get.offAllNamed(targetRoute);
+          } else {
+            Get.toNamed(targetRoute);
+          }
+        }
+      },
+      child: Center(
+        child: Icon(
+          iconSet[targetRoute] ?? Icons.close,
+          color: Get.currentRoute == targetRoute
+              ? Colors.blue
+              : Colors.blueGrey,
+        ),
+      ),
+    );
+  }
+
+  Widget? bottomNaviBar() {
+    if (bHideBottomNavi) {
+      return null;
+    } else {
+      return Container(
+        decoration: BoxDecoration(
+          border: BoxBorder.fromLTRB(
+            top: BorderSide(color: Colors.black87, width: 1),
+          ),
+        ),
+        height: 48,
+        width: double.infinity,
+        child: Row(
+          spacing: 4,
+          children: [
+            Expanded(child: bottomNaviButton(Routes.home)),
+            Expanded(child: bottomNaviButton(Routes.subPage)),
+          ],
+        ),
+      );
+    }
+  }
+
   @override
   State<BasePage<T>> createState() => _BasePageState<T>();
 }
@@ -123,9 +176,14 @@ class _BasePageState<T extends GetxController> extends State<BasePage<T>>
           }
         }
       },
-      child: Scaffold(
-        appBar: widget.bHideTopBar ? null : widget.topAppBar(),
-        body: widget.build(context),
+      child: SafeArea(
+        top: false,
+        bottom: true,
+        child: Scaffold(
+          appBar: widget.bHideTopBar ? null : widget.topAppBar(),
+          body: widget.build(context),
+          bottomNavigationBar: widget.bottomNaviBar(),
+        ),
       ),
     );
     return widget.build(context);
