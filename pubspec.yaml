@@ -38,6 +38,10 @@ dependencies:
   #  네트워크 상태 체크
   connectivity_plus: ^7.0.0
 
+  #  네이버 지도 api
+  #  네이버 클라우드 플랫폼에서 클라이언트 id 확인하여 연결
+  flutter_naver_map: ^1.4.1+1
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

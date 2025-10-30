@@ -19,14 +19,25 @@ class HomePage extends BasePage<HomePageController> {
   @override
   HomePageController get controller => Get.find<HomePageController>();
 
+
+  Widget testPageBtn(String sText, String sTargetRoute){
+    return InkWell(
+      onTap: (){
+        Get.toNamed(sTargetRoute);
+      },
+      child: Text(sText),
+    );
+  }
   @override
   Widget build(BuildContext context) {
     return Center(
-      child: InkWell(
-        onTap: () {
-          Get.toNamed(Routes.subPage);
-        },
-        child: Text("hello"),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        spacing: 10,
+        children: [
+          testPageBtn("SubPage", Routes.subPage),
+          testPageBtn("NaverMap", Routes.naverMapPage)
+        ]
       ),
     );
   }
