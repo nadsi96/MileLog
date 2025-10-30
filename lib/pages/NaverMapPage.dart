@@ -28,6 +28,5 @@ class NaverMapPage extends BasePage<NaverMapPageController> {
   }
 
   @override
-  // TODO: implement controller
   NaverMapPageController get controller => Get.find<NaverMapPageController>();
 }
